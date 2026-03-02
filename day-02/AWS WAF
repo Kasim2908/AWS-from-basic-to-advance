@@ -1,0 +1,103 @@
+What is AWS WAF?
+AWS WAF (Web Application Firewall) protects web applications from:
+
+SQL Injection
+
+Cross-Site Scripting (XSS)
+
+Malicious bots
+
+IP-based attacks
+
+Layer 7 (HTTP/HTTPS) attacks
+
+It works by inspecting incoming HTTP requests and evaluating them against rules in a Web ACL (Access Control List)
+
+
+
+
+
+Where Can You Attach AWS WAF?
+
+You can associate it with:
+
+Amazon CloudFront
+
+Application Load Balancer
+
+Amazon API Gateway
+
+
+
+
+
+Step 1️⃣ Deploy Sample Web App on EC2
+
+Use:
+
+Amazon EC2
+
+Quick setup:
+
+sudo yum update -y
+sudo yum install httpd -y
+sudo systemctl start httpd
+echo "Welcome to My Secure Web App - Day 2" | sudo tee /var/www/html/
+
+
+
+
+
+Step 2️⃣ Create Web ACL in AWS WAF
+
+Go to AWS Console → WAF
+
+Create Web ACL
+
+Choose Region
+
+Add rules:
+
+Recommended Managed Rules:
+
+AWS Managed SQL Injection Rule
+
+AWS Managed Common Rule Set
+
+IP Reputation List
+
+Step 3️⃣ Add Custom Rule (Example)
+
+Block specific IP:
+
+Rule type: IP set
+
+Action: Block
+
+OR block SQL pattern:
+
+SELECT * FROM
+
+
+
+
+
+
+Step 4️⃣ Associate Web ACL
+
+Attach to:
+
+ALB (recommended for beginners)
+
+OR
+
+CloudFront (if globally distributed app)
+
+Step 5️⃣ Test It
+
+Try visiting your website with:
+
+http://your-ip/?id=1' OR '1'='1
+
+
+
