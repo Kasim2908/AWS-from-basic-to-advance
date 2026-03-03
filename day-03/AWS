@@ -1,0 +1,160 @@
+
+☁️ What is Amazon S3?
+
+Amazon S3 (Simple Storage Service) is a scalable, secure, and durable cloud object storage service offered by Amazon Web Services (AWS).  It allows users to store and retrieve any amount of data from anywhere on the web, making it ideal for applications like data lakes, backups, website hosting, mobile apps, IoT devices, and big data analytics.
+It’s:
+
+Highly durable (11 9’s durability)
+
+Scalable
+
+Secure (if configured properly)
+
+
+
+
+
+
+[200~What is AWS Identity and Access Management (IAM)?
+AWS Identity and Access Management (IAM) is a foundational security service that enables organizations to securely control access to AWS resources.  It acts as the backbone of AWS security by managing who can access AWS services and what actions they can perform, ensuring only authorized identities interact with resources.
+
+
+
+
+Key Components of AWS IAM:
+Users: Represent individuals or applications requiring access to AWS resources. Each user has unique credentials (passwords, access keys).
+Groups: Logical containers that simplify permission management by assigning policies to multiple users at once.
+Roles: Temporary identities assumed by trusted entities (like EC2 instances or users) to access resources without long-term credentials. Ideal for service-to-service access.
+Policies: JSON documents that define permissions. They specify what actions are allowed or denied on which resources, under what conditions.
+
+
+
+💻 What is AWS Command Line Interface?
+AWS Command Line Interface (CLI) is an open-source tool that enables users to interact with Amazon Web Services (AWS) directly from a command-line shell.  It provides a unified, consistent interface to manage and automate AWS services such as EC2, S3, RDS, and Lambda using terminal commands
+The AWS CLI is a powerful alternative to the web-based console, especially for developers, system administrators, and teams focused on infrastructure-as-code and automation.
+
+
+
+
+
+Task 1: Create Private S3 Bucket
+Step 1: Create Bucket
+aws s3 mb s3://my-secure-bucket-12345
+Step 2: Block Public Access (Important)
+aws s3api put-public-access-block \
+--bucket my-secure-bucket-12345 \
+--public-access-block-configuration \
+BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+
+Now your bucket is private.
+
+
+
+
+
+
+🪜 Task 2: Configure AWS CLI (Ubuntu)
+Install CLI
+sudo apt update
+sudo apt install awscli -y
+Configure
+aws configure
+
+Enter:
+
+Access Key
+
+Secret Key
+
+Region (example: ap-south-1)
+
+Output format: json
+
+Test:
+
+aws s3 ls
+
+
+
+
+
+🪜 Task 3: Launch EC2 Using CLI
+
+Using Amazon EC2:
+
+aws ec2 run-instances \
+--image-id ami-xxxxxxxx \
+--count 1 \
+--instance-type t2.micro \
+--key-name my-key \
+--security-group-ids sg-xxxxxxx \
+--subnet-id subnet-xxxxxx
+
+Check instance:
+
+aws ec2 describe-instances
+
+
+
+
+
+🪜 Task 4: IAM Setup for Alex
+
+Scenario Requirements:
+
+✅ View EC2 instances only
+✅ Create S3 buckets
+❌ Cannot modify EC2
+
+🔐 Custom IAM Policy for Alex
+
+Create policy:
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:Describe*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+
+
+
+
+
+🚀 Day 3 of #7DaysOfAWS — How I Managed IAM, S3 & CLI on AWS!
+
+Today I explored three powerful AWS services:
+
+☁️ Amazon S3 – Learned how to create and secure private buckets
+👤 IAM – Created custom policies to enforce least privilege access
+💻 AWS CLI – Launched EC2 instances directly from terminal
+
+💡 Scenario:
+Configured IAM access for a new team member with:
+• Read-only EC2 permissions
+• Ability to create S3 buckets
+• No EC2 modification rights
+
+This helped me understand real-world access control in cloud environments.
+
+The biggest takeaway?
+Security + Automation = Real Cloud Engineering.
+
+Day 3 of my 7 Days of AWS Challenge with @TrainWithShubham 🚀
+Learning how to securely manage access in the cloud!
+
+#7DaysOfAWS #AWSwithTWS #CloudComputing #DevOps #AWS #IAM #S3
+
