@@ -1,0 +1,378 @@
+# 🌐 Day 5 – AWS VPC, Transit Gateway & CloudWatch
+
+### 7 Days of AWS Challenge 🚀
+
+On Day 5 of the **#7DaysOfAWS Challenge**, I explored AWS networking and monitoring concepts used to design secure and scalable cloud architectures.
+
+This lab focuses on understanding **VPC networking**, **connecting multiple VPCs using Transit Gateway**, and **monitoring infrastructure using Amazon CloudWatch**.
+
+---
+
+# 📚 Concepts Covered
+
+* Amazon VPC (Virtual Private Cloud)
+* Subnets
+* Internet Gateway
+* Route Tables
+* VPC Peering
+* AWS Transit Gateway
+* Amazon CloudWatch
+* EC2 + Nginx Monitoring
+
+---
+
+# 1️⃣ Virtual Private Cloud (VPC)
+
+A **Virtual Private Cloud (VPC)** is a logically isolated network within AWS where you can launch and manage AWS resources securely.
+
+It works like a **private data center network in the cloud** where you control:
+
+* IP address ranges
+* Subnets
+* Routing
+* Security settings
+* Internet connectivity
+
+### Key Features
+
+* Network isolation
+* Custom IP ranges
+* Control over inbound/outbound traffic
+* Secure communication between services
+
+Example CIDR block:
+
+```
+10.0.0.0/16
+```
+
+This allows **65,536 private IP addresses**.
+
+---
+
+# 2️⃣ Subnets
+
+A **subnet** divides a VPC into smaller networks.
+
+Subnets allow you to organize resources based on accessibility.
+
+### Types of Subnets
+
+| Subnet Type    | Purpose                                |
+| -------------- | -------------------------------------- |
+| Public Subnet  | Resources accessible from the internet |
+| Private Subnet | Internal resources like databases      |
+
+Example:
+
+```
+Public Subnet: 10.0.1.0/24
+Private Subnet: 10.0.2.0/24
+```
+
+---
+
+# 3️⃣ Internet Gateway
+
+An **Internet Gateway (IGW)** enables communication between a VPC and the internet.
+
+Resources in **public subnets** use the Internet Gateway to access external networks.
+
+Example traffic flow:
+
+```
+EC2 Instance → Route Table → Internet Gateway → Internet
+```
+
+Common use cases:
+
+* Web servers
+* APIs
+* Load balancers
+
+---
+
+# 4️⃣ Route Tables
+
+Route tables determine how network traffic moves inside a VPC.
+
+Example route table:
+
+| Destination | Target           |
+| ----------- | ---------------- |
+| 10.0.0.0/16 | local            |
+| 0.0.0.0/0   | Internet Gateway |
+
+This allows internal communication within the VPC and internet access.
+
+---
+
+# 5️⃣ VPC Peering
+
+**VPC Peering** allows two VPCs to communicate privately using private IP addresses.
+
+Traffic does **not go through the internet**.
+
+Example architecture:
+
+```
+VPC A (10.0.0.0/16)
+        |
+    VPC Peering
+        |
+VPC B (192.168.0.0/16)
+```
+
+### Use Case
+
+Example company departments:
+
+| Department  | VPC   |
+| ----------- | ----- |
+| Development | VPC-A |
+| Testing     | VPC-B |
+
+They use **VPC Peering** for private communication.
+
+### Limitation
+
+If many VPCs exist, peering becomes complex.
+
+Example:
+
+10 VPCs require **45 peering connections**.
+
+To solve this problem AWS provides **Transit Gateway**.
+
+---
+
+# 6️⃣ AWS Transit Gateway
+
+**AWS Transit Gateway (TGW)** is a central hub that connects multiple VPCs and on-premises networks.
+
+Instead of creating multiple peerings, all VPCs connect to the Transit Gateway.
+
+Example architecture:
+
+```
+           Transit Gateway
+          /      |      \
+       VPC-A   VPC-B   VPC-C
+```
+
+### Benefits
+
+* Centralized network connectivity
+* Highly scalable
+* Simplifies complex architectures
+* Works with on-premise networks
+
+### Real World Example
+
+Company: **ByteConnect Inc**
+
+| Department  | VPC             |
+| ----------- | --------------- |
+| HR          | VPC-HR          |
+| Finance     | VPC-Finance     |
+| Engineering | VPC-Engineering |
+
+All VPCs connect to the **Transit Gateway**.
+
+```
+HR VPC
+   \
+Finance VPC --- Transit Gateway --- Engineering VPC
+```
+
+---
+
+# 🪜 Task 1 – Learn AWS Networking
+
+Studied the following AWS networking components:
+
+* Virtual Private Cloud (VPC)
+* Subnets
+* Internet Gateway
+* Route Tables
+* VPC Peering
+
+These components together create a **secure and scalable cloud network architecture**.
+
+---
+
+# 🪜 Task 2 – Connect Multiple VPCs Using Transit Gateway
+
+### Scenario
+
+You are a **Cloud Architect at ByteConnect Inc**.
+
+Each department operates in its own VPC but needs secure communication with others.
+
+### Steps Performed
+
+1. Created multiple VPCs
+2. Created a Transit Gateway
+3. Attached VPCs to the Transit Gateway
+4. Updated route tables
+5. Launched EC2 instances in each VPC
+6. Tested connectivity using private IP
+
+Example command:
+
+```
+ping <private-ip-address>
+```
+
+---
+
+# 🪜 Task 3 – Monitor EC2 Using CloudWatch
+
+## Launch EC2 Instance
+
+Instance configuration:
+
+* Ubuntu Server
+* t2.micro
+* Security Group allowing HTTP (80) and SSH (22)
+
+Connect to instance:
+
+```
+ssh -i key.pem ubuntu@EC2-PUBLIC-IP
+```
+
+---
+
+## Install Nginx Web Server
+
+```
+sudo apt update
+sudo apt install nginx -y
+```
+
+Start Nginx:
+
+```
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
+
+Access web server:
+
+```
+http://EC2-PUBLIC-IP
+```
+
+---
+
+## Install CloudWatch Agent
+
+```
+sudo apt install amazon-cloudwatch-agent
+```
+
+Run configuration wizard:
+
+```
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+```
+
+---
+
+## Monitor Nginx Logs
+
+Important logs:
+
+```
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+```
+
+These logs are sent to **CloudWatch Log Groups**.
+
+Navigate to:
+
+```
+AWS Console → CloudWatch → Log Groups
+```
+
+---
+
+## Create CloudWatch Alarm
+
+Steps:
+
+1. Open **CloudWatch**
+2. Go to **Alarms**
+3. Click **Create Alarm**
+4. Select EC2 metric
+
+Example metric:
+
+```
+CPUUtilization
+```
+
+Alarm rule example:
+
+```
+CPU > 80%
+```
+
+Notification can be sent using **Amazon SNS**.
+
+---
+
+# 🏗️ Architecture Overview
+
+```
+              Internet
+                 |
+          Internet Gateway
+                 |
+            Public Subnet
+                 |
+               EC2
+                 |
+            Private Subnet
+                 |
+         AWS Transit Gateway
+          /      |      \
+       VPC-A   VPC-B   VPC-C
+
+Monitoring Layer:
+CloudWatch → Metrics + Logs + Alarms
+```
+
+---
+
+# 📊 Key Takeaways
+
+* VPC provides network isolation in AWS
+* Subnets divide networks into public and private segments
+* Internet Gateway enables internet access
+* VPC Peering connects two VPCs privately
+* Transit Gateway connects multiple VPCs efficiently
+* CloudWatch helps monitor logs, metrics, and system health
+
+---
+
+# 🧑‍💻 Author
+
+**Kasim**
+DevOps & Cloud Enthusiast
+
+Challenge: **7 Days of AWS**
+
+# 🏷️ Tags
+
+```
+AWS
+Amazon VPC
+Transit Gateway
+CloudWatch
+DevOps
+Cloud Networking
+7DaysOfAWS
+```
