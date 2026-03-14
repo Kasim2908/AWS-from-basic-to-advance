@@ -1,0 +1,35 @@
+{
+  "family": "flask-two-tier",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "flask-app",
+      "image": "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/flask-two-tier:latest",
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "RDS_HOST",     "value": "<RDS_ENDPOINT>" },
+        { "name": "RDS_USER",     "value": "<DB_USER>" },
+        { "name": "RDS_PASSWORD", "value": "<DB_PASSWORD>" },
+        { "name": "RDS_DB",       "value": "ecommerce" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/flask-two-tier",
+          "awslogs-region": "<REGION>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "essential": true
+    }
+  ]
+}
