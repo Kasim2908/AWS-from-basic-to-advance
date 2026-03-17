@@ -1,0 +1,59 @@
+version: 0.2
+
+# CodeBuild specification for Node.js application
+# This file defines how CodeBuild should build your application
+
+phases:
+  install:
+    # Install system dependencies and runtime
+    runtime-versions:
+      nodejs: 18
+    
+    # Pre-build commands (optional)
+    commands:
+      - echo "Installing dependencies..."
+      - npm update -g npm
+
+  pre_build:
+    # Commands to run before building
+    commands:
+      - echo "Running tests..."
+      - npm install
+      # Uncomment below if you have tests
+      # - npm test
+
+  build:
+    # Main build commands
+    commands:
+      - echo "Building application..."
+      - echo "Build started at $(date)"
+      - npm run build
+      - echo "Build completed at $(date)"
+
+  post_build:
+    # Commands after successful build
+    commands:
+      - echo "Preparing artifacts for deployment..."
+      - echo "Application version:" $(node -e "console.log(require('./package.json').version)")
+
+artifacts:
+  # Define what to include in build artifact
+  files:
+    - app.js
+    - package.json
+    - package-lock.json
+    - node_modules/**/*
+  
+  # Name of the artifact
+  name: app-artifact
+
+cache:
+  # Cache dependencies for faster builds
+  paths:
+    - 'node_modules/**/*'
+
+logs:
+  # CloudWatch Logs
+  cloudwatch:
+    group-name: '/aws/codebuild/nodejs-app'
+    stream-name: 'nodejs-app-build-logs'

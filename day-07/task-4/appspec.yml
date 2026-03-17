@@ -1,0 +1,54 @@
+version: 0.0
+
+# CodeDeploy application specification for Node.js app
+# Defines how application should be deployed on EC2
+
+Resources:
+  - TargetService:
+      Type: AWS::EC2::Instance
+      Properties:
+        Tags:
+          - Key: Name
+            Value: nodejs-codedeploy-target
+          - Key: Application
+            Value: nodejs-devops-app
+
+Files:
+  - source: /
+    destination: /opt/nodejs-app
+
+Permissions:
+  - object: /opt/nodejs-app
+    mode: 755
+    type:
+      - directory
+  - object: /opt/nodejs-app
+    mode: 644
+    type:
+      - file
+
+Hooks:
+  BeforeInstall:
+    - location: hooks/before-install.sh
+      timeout: 300
+      runas: root
+
+  AfterInstall:
+    - location: hooks/after-install.sh
+      timeout: 300
+      runas: root
+
+  ApplicationStart:
+    - location: hooks/app-start.sh
+      timeout: 300
+      runas: root
+
+  ApplicationStop:
+    - location: hooks/app-stop.sh
+      timeout: 300
+      runas: root
+
+  ValidateService:
+    - location: hooks/validate-service.sh
+      timeout: 300
+      runas: root
