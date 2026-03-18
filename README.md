@@ -1,4 +1,4 @@
-# AWS from Basic to Advance
+# AWS from Basic to Advance Level
 
 Hands-on AWS learning repository that walks through foundational to intermediate cloud concepts across a 7-day challenge format.
 
